@@ -39,7 +39,80 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Include the script content from the provided `script.js` example here
+        document.addEventListener('DOMContentLoaded', function() {
+            const names = ['Name 1', 'Name 2', 'Name 3', 'Name 4', 'Name 5'];
+            const namesContainer = document.getElementById('names');
+        
+            names.forEach((name, index) => {
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = 'checkbox' + index;
+                checkbox.dataset.name = name;
+                checkbox.addEventListener('change', handleCheckboxChange);
+                
+                const label = document.createElement('label');
+                label.htmlFor = 'checkbox' + index;
+                label.textContent = name;
+        
+                namesContainer.appendChild(checkbox);
+                namesContainer.appendChild(label);
+                namesContainer.appendChild(document.createElement('br'));
+            });
+        
+            function handleCheckboxChange(event) {
+                const inputArea = document.getElementById('inputArea');
+                if (event.target.checked) {
+                    inputArea.innerHTML = `
+                        <label for="lwInput">LW:</label>
+                        <input type="text" id="lwInput" name="lwInput">
+                        <label for="answersInput">Answers:</label>
+                        <input type="text" id="answersInput" name="answersInput">
+                        <button onclick="submitAnswer('${event.target.dataset.name}')">Submit</button>
+                    `;
+                    inputArea.style.display = 'block';
+                } else {
+                    inputArea.style.display = 'none';
+                    inputArea.innerHTML = '';
+                }
+            }
+        
+            async function submitAnswer(name) {
+                const lwValue = document.getElementById('lwInput').value;
+                const answersValue = document.getElementById('answersInput').value;
+        
+                try {
+                    await addDoc(collection(db, "submissions"), {
+                        name: name,
+                        lw: lwValue,
+                        answers: answersValue,
+                        timestamp: serverTimestamp()
+                    });
+                    console.log("Document successfully written!");
+                    document.getElementById('inputArea').style.display = 'none';
+                    document.getElementById('inputArea').innerHTML = '';
+                    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+                } catch (error) {
+                    console.error("Error writing document: ", error);
+                }
+            }
+        
+            function loadFeed() {
+                const feedContainer = document.getElementById('feed');
+                const q = query(collection(db, "submissions"), orderBy("timestamp", "desc"));
+        
+                onSnapshot(q, (querySnapshot) => {
+                    feedContainer.innerHTML = '';
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        const feedItem = document.createElement('div');
+                        feedItem.innerHTML = `<strong>${data.name}</strong>: LW - ${data.lw}, Answers - ${data.answers}`;
+                        feedContainer.appendChild(feedItem);
+                    });
+                });
+            }
+        
+            loadFeed();
+        });        
     </script>
 </body>
 </html>
