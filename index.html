@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Feed</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="names">
@@ -22,7 +22,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+        
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyB_NYJcAhgof35siN0dswL9fyzjYZ_uUwI",
@@ -40,6 +40,7 @@
         const db = getFirestore(app);
 
         document.addEventListener('DOMContentLoaded', function() {
+            const db = getFirestore();
             const names = ['Name 1', 'Name 2', 'Name 3', 'Name 4', 'Name 5'];
             const namesContainer = document.getElementById('names');
         
@@ -61,20 +62,31 @@
         
             function handleCheckboxChange(event) {
                 const inputArea = document.getElementById('inputArea');
+                inputArea.innerHTML = ''; // Clear previous inputs if any
+        
                 if (event.target.checked) {
-                    inputArea.innerHTML = `
-                        <label for="lwInput">LW:</label>
-                        <input type="text" id="lwInput" name="lwInput">
-                        <label for="answersInput">Answers:</label>
-                        <input type="text" id="answersInput" name="answersInput">
-                        <button onclick="submitAnswer('${event.target.dataset.name}')">Submit</button>
-                    `;
+                    const lwLabel = document.createElement('label');
+                    lwLabel.textContent = 'LW:';
+                    const lwInput = document.createElement('input');
+                    lwInput.id = 'lwInput';
+        
+                    const answersLabel = document.createElement('label');
+                    answersLabel.textContent = 'Answers:';
+                    const answersInput = document.createElement('input');
+                    answersInput.id = 'answersInput';
+        
+                    const submitButton = document.createElement('button');
+                    submitButton.textContent = 'Submit';
+                    // Attach event listener directly in JavaScript
+                    submitButton.addEventListener('click', () => submitAnswer(event.target.dataset.name));
+        
+                    inputArea.append(lwLabel, lwInput, answersLabel, answersInput, submitButton);
                     inputArea.style.display = 'block';
                 } else {
                     inputArea.style.display = 'none';
-                    inputArea.innerHTML = '';
                 }
             }
+        
         
             async function submitAnswer(name) {
                 const lwValue = document.getElementById('lwInput').value;
