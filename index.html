@@ -17,12 +17,29 @@
         <!-- Feed of all submissions will be displayed here -->
     </div>
 
-    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <!-- Add Firebase products that you want to use -->
-    <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_NYJcAhgof35siN0dswL9fyzjYZ_uUwI",
+            authDomain: "bois-4b6a2.firebaseapp.com",
+            projectId: "bois-4b6a2",
+            storageBucket: "bois-4b6a2.appspot.com",
+            messagingSenderId: "838311928580",
+            appId: "1:838311928580:web:dc9010d90c5ffe1fdae651",
+            measurementId: "G-F70JEGSCQP"
+        };
 
-    <script src="script.js"></script>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Include the script content from the provided `script.js` example here
+    </script>
 </body>
 </html>
