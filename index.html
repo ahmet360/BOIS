@@ -3,128 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Feed</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Simple Text Posting App</title>
 </head>
 <body>
-    <div id="names">
-        <!-- Names and checkboxes will be added here dynamically -->
-    </div>
-    <div id="inputArea" style="display:none;">
-        <!-- Input fields will be displayed here when a checkbox is checked -->
-    </div>
-    <div id="feed">
-        <!-- Feed of all submissions will be displayed here -->
-    </div>
-
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_NYJcAhgof35siN0dswL9fyzjYZ_uUwI",
-            authDomain: "bois-4b6a2.firebaseapp.com",
-            projectId: "bois-4b6a2",
-            storageBucket: "bois-4b6a2.appspot.com",
-            messagingSenderId: "838311928580",
-            appId: "1:838311928580:web:dc9010d90c5ffe1fdae651",
-            measurementId: "G-F70JEGSCQP"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getFirestore(app);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const db = getFirestore();
-            const names = ['Name 1', 'Name 2', 'Name 3', 'Name 4', 'Name 5'];
-            const namesContainer = document.getElementById('names');
-        
-            names.forEach((name, index) => {
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.id = 'checkbox' + index;
-                checkbox.dataset.name = name;
-                checkbox.addEventListener('change', handleCheckboxChange);
-                
-                const label = document.createElement('label');
-                label.htmlFor = 'checkbox' + index;
-                label.textContent = name;
-        
-                namesContainer.appendChild(checkbox);
-                namesContainer.appendChild(label);
-                namesContainer.appendChild(document.createElement('br'));
-            });
-        
-            function handleCheckboxChange(event) {
-                const inputArea = document.getElementById('inputArea');
-                inputArea.innerHTML = ''; // Clear previous inputs if any
-        
-                if (event.target.checked) {
-                    const lwLabel = document.createElement('label');
-                    lwLabel.textContent = 'LW:';
-                    const lwInput = document.createElement('input');
-                    lwInput.id = 'lwInput';
-        
-                    const answersLabel = document.createElement('label');
-                    answersLabel.textContent = 'Answers:';
-                    const answersInput = document.createElement('input');
-                    answersInput.id = 'answersInput';
-        
-                    const submitButton = document.createElement('button');
-                    submitButton.textContent = 'Submit';
-                    // Attach event listener directly in JavaScript
-                    submitButton.addEventListener('click', () => submitAnswer(event.target.dataset.name));
-        
-                    inputArea.append(lwLabel, lwInput, answersLabel, answersInput, submitButton);
-                    inputArea.style.display = 'block';
-                } else {
-                    inputArea.style.display = 'none';
-                }
-            }
-        
-        
-            async function submitAnswer(name) {
-                const lwValue = document.getElementById('lwInput').value;
-                const answersValue = document.getElementById('answersInput').value;
-        
-                try {
-                    await addDoc(collection(db, "submissions"), {
-                        name: name,
-                        lw: lwValue,
-                        answers: answersValue,
-                        timestamp: serverTimestamp()
-                    });
-                    console.log("Document successfully written!");
-                    document.getElementById('inputArea').style.display = 'none';
-                    document.getElementById('inputArea').innerHTML = '';
-                    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
-                } catch (error) {
-                    console.error("Error writing document: ", error);
-                }
-            }
-        
-            function loadFeed() {
-                const feedContainer = document.getElementById('feed');
-                const q = query(collection(db, "submissions"), orderBy("timestamp", "desc"));
-        
-                onSnapshot(q, (querySnapshot) => {
-                    feedContainer.innerHTML = '';
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const feedItem = document.createElement('div');
-                        feedItem.innerHTML = `<strong>${data.name}</strong>: LW - ${data.lw}, Answers - ${data.answers}`;
-                        feedContainer.appendChild(feedItem);
-                    });
-                });
-            }
-        
-            loadFeed();
-        });        
-    </script>
+    <h1>Post Your Text</h1>
+    <textarea id="postContent" rows="4" cols="50"></textarea><br>
+    <button onclick="submitPost()">Submit</button>
+    <h2>Posts</h2>
+    <div id="postsContainer"></div>
+    <script src="script.js"></script>
 </body>
 </html>
